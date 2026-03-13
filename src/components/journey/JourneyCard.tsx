@@ -2,7 +2,7 @@
 
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 const CARD_WIDTH = 592;
 const CARD_HEIGHT = 341;
@@ -13,7 +13,7 @@ const IMG_TOP = 38;
 const IMG_OFFSET = 49;
 
 /** Radius of the left/right middle cutouts on hover (inward semicircle — larger = stronger “scooped” look) */
-const CUTOUT_RADIUS = 50;
+const CUTOUT_RADIUS = 55;
 const CUTOUT_CENTER_Y = CARD_HEIGHT / 2;
 
 /** Inset from left/right edges — shifts cutouts and carousel inward so they sit inside the card */
@@ -80,6 +80,10 @@ export interface JourneyCardProps {
   titleNudgeLeft?: number;
   /** When true, card shows hover layout: cutout shape, carousel area, nav buttons; illustration hides on hover */
   enableHoverCarousel?: boolean;
+  /** Custom content to show inside the hover carousel area (e.g. images + text per card) */
+  hoverContent?: ReactNode;
+  /** Multiple slides for carousel; nav buttons switch between them. Takes precedence over hoverContent when provided. */
+  carouselSlides?: ReactNode[];
 }
 
 const HOVER_CLIP_ID = "journey-card-hover-clip";
@@ -94,7 +98,16 @@ export function JourneyCard({
   illustrationOverrides,
   titleNudgeLeft,
   enableHoverCarousel = false,
+  hoverContent,
+  carouselSlides,
 }: JourneyCardProps) {
+  const [slideIndex, setSlideIndex] = useState(0);
+  const hasCarousel = (carouselSlides?.length ?? 0) > 1;
+  const effectiveHoverContent =
+    carouselSlides?.length != null && carouselSlides.length > 0
+      ? carouselSlides[slideIndex]
+      : hoverContent;
+
   const isLeft = illustrationPosition === "left";
   const imgW = illustrationOverrides?.width ?? IMG_WIDTH;
   const imgH = illustrationOverrides?.height ?? IMG_HEIGHT;
@@ -110,12 +123,14 @@ export function JourneyCard({
       <div className="relative flex w-full h-full overflow-visible rounded-[30px]">
         {/* Illustration wrapper: absolute, extends outside card — hidden on hover when carousel enabled */}
         <div
-          className={`absolute overflow-visible flex items-end shrink-0 bg-transparent z-20 transition-opacity duration-300 ${enableHoverCarousel ? "group-hover:opacity-0 group-hover:pointer-events-none" : ""}`}
+          className={`absolute overflow-visible flex items-end shrink-0 bg-transparent z-20 transition-opacity duration-300 ${enableHoverCarousel ? "opacity-100 group-hover:opacity-0 group-hover:pointer-events-none" : ""}`}
           style={{
             width: imgW,
             height: imgH,
             top: imgTop,
-            opacity: illustrationOverrides?.opacity ?? 1,
+            ...(!enableHoverCarousel && {
+              opacity: illustrationOverrides?.opacity ?? 1,
+            }),
             ...(hasShadow && {
               filter: "drop-shadow(0 8px 16px rgba(0, 0, 0, 0.12))",
             }),
@@ -154,34 +169,32 @@ export function JourneyCard({
           </motion.div>
         </div>
 
-        {/* Carousel area (layout only) — visible only on hover when enableHoverCarousel */}
-        {enableHoverCarousel && (
+        {/* Carousel area (placeholder when no hover/carousel content; content with overflow is rendered outside article) */}
+        {enableHoverCarousel && effectiveHoverContent == null && (
           <div
             className="absolute inset-0 z-10 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity duration-300 flex items-center justify-center"
             aria-hidden
           >
             <div
-              className="w-full h-full flex items-center justify-center"
+              className="w-full h-full flex items-center justify-center relative overflow-visible"
               style={{
                 marginLeft: HOVER_SIDE_INSET + CUTOUT_RADIUS,
                 marginRight: HOVER_SIDE_INSET + CUTOUT_RADIUS,
               }}
             >
-              {/* Placeholder for carousel content — empty layout */}
               <div className="w-full h-full min-h-0 rounded-lg border border-white/30 border-dashed" />
             </div>
           </div>
         )}
 
-        {/* Text block: typography position and size — 1st/3rd left: 206px, 2nd/4th left: 35px */}
+        {/* Text block: typography — sits behind hover overlay (z-[5]) when carousel enabled so hover content fully covers it */}
         <div
-          className="flex flex-col justify-center z-10 absolute"
+          className={`flex flex-col justify-center absolute transition-opacity duration-300 ${enableHoverCarousel ? "z-[5] group-hover:opacity-0 group-hover:pointer-events-none" : "z-10"}`}
           style={{
             width: 351,
             height: 225,
             top: 58,
             left: isLeft ? 206 : 35,
-            opacity: 1,
             gap: 12,
           }}
         >
@@ -244,18 +257,26 @@ export function JourneyCard({
         </svg>
       )}
 
-      {/* Nav buttons in cutouts — only when enableHoverCarousel, visible on hover */}
+      {/* Nav buttons in cutouts — only when enableHoverCarousel, visible on hover; when carouselSlides, they switch slides */}
       {enableHoverCarousel && (
         <>
           <button
             type="button"
-            className="absolute z-30 w-14 h-14 rounded-full bg-white/90 shadow-lg border border-gray-200 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:pointer-events-auto pointer-events-none transition-opacity duration-300 hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/50 text-gray-900"
+            className="absolute z-30 w-14 h-14 rounded-full bg-white/90 shadow-lg border border-gray-300 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:pointer-events-auto pointer-events-none transition-opacity duration-300 hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/50 text-gray-900"
             style={{
               left: HOVER_SIDE_INSET,
               top: CUTOUT_CENTER_Y,
               transform: "translate(-50%, -50%)",
             }}
             aria-label="Previous"
+            onClick={
+              hasCarousel
+                ? () =>
+                    setSlideIndex((i) =>
+                      (i - 1 + carouselSlides!.length) % carouselSlides!.length
+                    )
+                : undefined
+            }
           >
             <Icon
               icon="basil:arrow-left-outline"
@@ -268,13 +289,19 @@ export function JourneyCard({
           </button>
           <button
             type="button"
-            className="absolute z-30 w-14 h-14 rounded-full bg-white/90 shadow-md border border-gray-200 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:pointer-events-auto pointer-events-none transition-opacity duration-300 hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/50 text-gray-900"
+            className="absolute z-30 w-14 h-14 rounded-full bg-white/90 shadow-lg border border-gray-300 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:pointer-events-auto pointer-events-none transition-opacity duration-300 hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/50 text-gray-900"
             style={{
               left: CARD_WIDTH - HOVER_SIDE_INSET,
               top: CUTOUT_CENTER_Y,
               transform: "translate(-50%, -50%)",
             }}
             aria-label="Next"
+            onClick={
+              hasCarousel
+                ? () =>
+                    setSlideIndex((i) => (i + 1) % carouselSlides!.length)
+                : undefined
+            }
           >
             <Icon
               icon="basil:arrow-right-outline"
@@ -293,6 +320,22 @@ export function JourneyCard({
       >
         {cardContent}
       </article>
+
+      {/* Hover content outside article so img can overflow card without being clipped by clip-path */}
+      {enableHoverCarousel && effectiveHoverContent != null && (
+        <div
+          className="absolute inset-0 z-10 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity duration-300 flex items-center justify-center overflow-visible"
+          aria-hidden
+          style={{
+            marginLeft: HOVER_SIDE_INSET + CUTOUT_RADIUS,
+            marginRight: HOVER_SIDE_INSET + CUTOUT_RADIUS,
+          }}
+        >
+          <div className="w-full h-full relative overflow-visible">
+            {effectiveHoverContent}
+          </div>
+        </div>
+      )}
 
       {/* Apply clip-path on hover so the card shape gets left/right cutouts */}
       {enableHoverCarousel && (
