@@ -48,6 +48,7 @@ export function JourneySection() {
           >
             <JourneyCard
               key={card.id}
+              enableHoverCarousel={index === 0}
               title={card.title}
               subtitle={card.subtitle}
               bodyText={card.bodyText}
