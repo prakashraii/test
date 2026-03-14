@@ -118,12 +118,52 @@ const THIRD_CARD_ILLUSTRATION = {
 export function JourneySection() {
   return (
     <section className="max-w-[1280px] mx-auto overflow-visible">
-      <p className="text-gray-700 text-sm font-medium mb-1">
-        Your SkillShikshya Journey
-      </p>
-      <h2 className="text-2xl md:text-3xl font-bold text-green-600 mb-10">
-        Step In. Skill Up. Stand Out. 🚀
-      </h2>
+      <div
+        className="mb-1"
+        style={{
+          width: "453px",
+          height: "30px",
+          opacity: 1,
+        }}
+      >
+        <p
+          style={{
+            fontFamily: "Outfit, sans-serif",
+            fontWeight: 500,
+            fontStyle: "normal",
+            fontSize: "24px",
+            lineHeight: "100%",
+            letterSpacing: "0%",
+            color: "#374151",
+            margin: 0,
+          }}
+        >
+          Your SkillShikshya Journey
+        </p>
+      </div>
+      <div
+        className="mb-10"
+        style={{
+          width: "453px",
+          height: "38px",
+          opacity: 1,
+        }}
+      >
+        <h2
+          style={{
+            fontFamily: "Nohemi, sans-serif",
+            fontWeight: 700,
+            fontStyle: "normal",
+            fontSize: "32px",
+            lineHeight: "120%",
+            letterSpacing: "0%",
+            color: "var(--green-600, #16a34a)",
+            margin: 0,
+          }}
+        >
+          Step <span style={{ color: "#374151" }}>In.</span> Skill <span style={{ color: "#374151" }}>Up.</span> Stand <span style={{ color: "#374151" }}>Out.</span> 🚀
+        </h2>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-12 place-items-center overflow-visible">
         {journeyCards.map((card, index) => (
           <div

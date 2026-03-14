@@ -10,9 +10,7 @@ export default function Home() {
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
             SkillShikshya Journey
           </h1>
-          <p className="text-gray-600 mb-12">
-            Step In. Skill Up. Stand Out.
-          </p>
+          <p className="text-gray-600 mb-12">Step In. Skill Up. Stand Out.</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <Link
               href="/task1"
@@ -25,11 +23,11 @@ export default function Home() {
                 Journey
               </h2>
               <p className="text-gray-600 mt-2 text-sm">
-                Explore our journey cards with hover animations and rich content.
+                Explore our journey cards with hover animations and rich
+                content.
               </p>
               <span className="inline-flex items-center gap-1 mt-4 text-rose-600 font-medium text-sm group-hover:gap-2 transition-all">
-                Open Task 1
-                <span aria-hidden>→</span>
+                Open Task 1<span aria-hidden>→</span>
               </span>
             </Link>
             <Link
@@ -43,11 +41,11 @@ export default function Home() {
                 What&apos;s Hot Right Now
               </h2>
               <p className="text-gray-600 mt-2 text-sm">
-                Course overview with statistic cards. Click cards to view animations.
+                Course overview with statistic cards. Click cards to view
+                animations.
               </p>
               <span className="inline-flex items-center gap-1 mt-4 text-emerald-600 font-medium text-sm group-hover:gap-2 transition-all">
-                Open Task 2
-                <span aria-hidden>→</span>
+                Open Task 2<span aria-hidden>→</span>
               </span>
             </Link>
           </div>

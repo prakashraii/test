@@ -51,18 +51,61 @@ export function HotSection() {
   return (
     <section
       id="task2"
-      className="max-w-[1216px] mx-auto px-4 md:px-8 py-12 scroll-mt-24"
+      className="max-w-[1216px] mx-auto px-4 md:px-8 mb-4 py-12 scroll-mt-24"
     >
-      <p className="text-center text-gray-500 text-sm mb-2">
+      <p className="text-center text-gray-500 text-sm mb-6">
         Note: Click the cards to view the animation
       </p>
-      <p className="text-gray-700 text-base mb-1">
-        Explore our classes and master trending skills!
-      </p>
-      <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-10">
-        Dive Into{" "}
-        <span className="text-emerald-500">What&apos;s Hot Right Now!</span> 🔥
-      </h2>
+      <div
+        className="mb-2"
+        style={{
+          width: "484px",
+          height: "30px",
+          opacity: 1,
+        }}
+      >
+        <p
+          style={{
+            fontFamily: "Outfit, sans-serif",
+            fontWeight: 400,
+            fontStyle: "normal",
+            fontSize: "24px",
+            lineHeight: "100%",
+            letterSpacing: "0%",
+            color: "#414141",
+            margin: 0,
+          }}
+        >
+          Explore our classes and master trending skills!
+        </p>
+      </div>
+      <div
+        className="mb-10"
+        style={{
+          width: "528px",
+          height: "38px",
+          opacity: 1,
+        }}
+      >
+        <h2
+          style={{
+            fontFamily: "Nohemi, sans-serif",
+            fontWeight: 700,
+            fontStyle: "normal",
+            fontSize: "32px",
+            lineHeight: "120%",
+            letterSpacing: "0%",
+            color: "#2B2B2B",
+            margin: 0,
+          }}
+        >
+          Dive Into{" "}
+          <span style={{ color: "var(--emerald-500, #10b981)" }}>
+            What&apos;s Hot Right Now!
+          </span>{" "}
+          🔥
+        </h2>
+      </div>
 
       <motion.div
         variants={container}
@@ -86,14 +129,17 @@ export function HotSection() {
                 opacity: { type: "spring", stiffness: 300, damping: 28 },
                 y: { type: "spring", stiffness: 300, damping: 28 },
               }}
-              className={`relative rounded-2xl cursor-pointer flex-shrink-0
+              className={`relative cursor-pointer flex-shrink-0
                 h-[320px] md:h-full group
-                ${isFeatured ? "md:w-[592px] overflow-hidden" : "md:w-[260px] overflow-visible"}
+                ${isFeatured ? "md:w-[592px] overflow-hidden rounded-2xl" : "md:w-[260px] overflow-visible rounded-2xl rounded-b-[1.5rem]"}
               `}
               style={{
                 backgroundColor: isFeatured
                   ? "var(--Secondary-Secondary500, #C33241)"
-                  : "var(--secondary-light)",
+                  : "var(--Secondary-Secondary50, #F9EBEC)",
+                ...(!isFeatured && {
+                  boxShadow: "inset 0 -1px 0 rgba(147, 112, 219, 0.15)",
+                }),
               }}
               onClick={() => setActiveId(item.id)}
             >
@@ -144,30 +190,71 @@ export function HotSection() {
                         }}
                       />
                     </div>
-                    {/* Rotated title + description */}
-                    <div className="flex-1 flex items-center justify-center overflow-hidden">
+                    {/* Rotated title + description — vertical, start from bottom-0 */}
+                    <div className="flex-1 min-h-0 max-h-[220px] flex items-end justify-center overflow-hidden">
                       <div
-                        className="flex flex-col items-center gap-1"
+                        className="flex flex-col gap-2"
                         style={{
                           writingMode: "vertical-rl",
                           transform: "rotate(180deg)",
-                          whiteSpace: "nowrap",
+                          textOrientation: "mixed",
                         }}
                       >
-                        <span
-                          className="font-bold text-lg leading-tight"
-                          style={{
-                            color: "var(--Secondary-Secondary500, #C33241)",
-                          }}
-                        >
-                          {item.label}
-                        </span>
+                        <>
+                          {(() => {
+                            const parts = item.label.split(" ");
+                            const firstLine = parts.slice(0, -1).join(" ");
+                            const secondLine = parts[parts.length - 1];
+                            const titleStyle = {
+                              fontFamily: "Outfit, sans-serif",
+                              fontWeight: 700,
+                              fontStyle: "normal" as const,
+                              fontSize: "32px",
+                              lineHeight: "100%",
+                              letterSpacing: "0%",
+                              color: "#C52F47",
+                            };
+                            if (parts.length === 1) {
+                              return (
+                                <span
+                                  className="whitespace-nowrap"
+                                  style={titleStyle}
+                                >
+                                  {item.label}
+                                </span>
+                              );
+                            }
+                            return (
+                              <>
+                                <span
+                                  className="whitespace-nowrap"
+                                  style={titleStyle}
+                                >
+                                  {firstLine}
+                                </span>
+                                <span
+                                  className="whitespace-nowrap"
+                                  style={titleStyle}
+                                >
+                                  {secondLine}
+                                </span>
+                              </>
+                            );
+                          })()}
+                        </>
                         {item.description && (
                           <span
-                            className="text-xs mt-1"
                             style={{
-                              color: "var(--Secondary-Secondary500, #C33241)",
-                              opacity: 0.7,
+                              fontFamily: "Outfit, sans-serif",
+                              fontWeight: 400,
+                              fontStyle: "normal",
+                              fontSize: "18px",
+                              lineHeight: "100%",
+                              letterSpacing: "0%",
+                              color: "#C52F47",
+                              maxWidth: "10rem",
+                              wordBreak: "break-word",
+                              whiteSpace: "normal",
                             }}
                           >
                             {item.description}
@@ -176,24 +263,43 @@ export function HotSection() {
                       </div>
                     </div>
 
-                    {/* Large number bottom */}
-                    <div className="flex items-end">
+                    {/* Large number bottom — "05+" with superscript "+" */}
+                    <div
+                      className="flex items-end justify-center"
+                      style={{
+                        width: "220px",
+                        height: "160px",
+                        opacity: 1,
+                      }}
+                    >
                       <span
-                        className="font-black leading-none"
                         style={{
-                          fontSize: "clamp(3rem, 5vw, 5rem)",
-                          color: "var(--Secondary-Secondary500, #C33241)",
+                          fontFamily: "Nohemi, sans-serif",
+                          fontWeight: 700,
+                          fontStyle: "normal",
+                          fontSize: "150px",
+                          lineHeight: "120%",
+                          letterSpacing: "0%",
+                          textAlign: "center",
+                          color: "#C52F47",
                         }}
                       >
-                        {item.count}
-                      </span>
-                      <span
-                        className="font-black text-3xl mb-2 ml-0.5"
-                        style={{
-                          color: "var(--Secondary-Secondary500, #C33241)",
-                        }}
-                      >
-                        +
+                        {String(item.count).padStart(2, "0")}
+                        <sup
+                          style={{
+                            fontFamily: "Nohemi, sans-serif",
+                            fontWeight: 700,
+                            fontSize: "0.4em",
+                            verticalAlign: "super",
+                            lineHeight: 0,
+                            color: "#C52F47",
+                            position: "relative",
+                            left: "-10px",
+                            top: "-40px",
+                          }}
+                        >
+                          +
+                        </sup>
                       </span>
                     </div>
                   </motion.div>
@@ -354,7 +460,7 @@ export function HotSection() {
                             color: "var(--Secondary-Secondary50, #F9EBEC)",
                           }}
                         >
-                          {item.count}
+                          {String(item.count).padStart(2, "0")}
                         </motion.div>
                       </div>
 
