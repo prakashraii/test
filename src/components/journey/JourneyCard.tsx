@@ -2,7 +2,7 @@
 
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 const CARD_WIDTH = 592;
 const CARD_HEIGHT = 341;
@@ -102,6 +102,21 @@ export function JourneyCard({
   carouselSlides,
 }: JourneyCardProps) {
   const [slideIndex, setSlideIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+  /** When true, cutout clip-path is applied; delayed on hover so slide starts before clip */
+  const [clipActive, setClipActive] = useState(false);
+  /** Distance from card left edge to viewport left — used so content slides to/from screen edge */
+  const [distanceToLeftEdge, setDistanceToLeftEdge] = useState(0);
+  const cardWrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!enableHoverCarousel) return;
+    if (isHovered) {
+      const t = setTimeout(() => setClipActive(true), 120);
+      return () => clearTimeout(t);
+    }
+    setClipActive(false);
+  }, [isHovered, enableHoverCarousel]);
   const hasCarousel = (carouselSlides?.length ?? 0) > 1;
   const effectiveHoverContent =
     carouselSlides?.length != null && carouselSlides.length > 0
@@ -118,12 +133,37 @@ export function JourneyCard({
   const overflowVisible = illustrationOverrides?.overflowVisible ?? false;
   const hasShadow = illustrationOverrides?.shadow ?? false;
 
+  /** When true, card content slides left on hover and hoverContent appears; content slides back from left on unhover */
+  const useSlideHover = enableHoverCarousel && effectiveHoverContent != null;
+
+  /** When hovered, slide content fully off the left so it disappears (not just to viewport edge). */
+  const slideOffset = distanceToLeftEdge + CARD_WIDTH;
+
   const cardContent = (
     <>
-      <div className="relative flex w-full h-full overflow-visible rounded-[30px]">
-        {/* Illustration wrapper: absolute, extends outside card — hidden on hover when carousel enabled */}
+      <motion.div
+        className="relative flex w-full h-full overflow-visible rounded-[30px]"
+        style={useSlideHover ? { zIndex: 20 } : undefined}
+        animate={{
+          x: useSlideHover && isHovered ? -slideOffset : 0,
+        }}
+        transition={{ type: "tween", duration: 0.65, ease: "easeInOut" }}
+      >
+        {/* Dim background that moves with the content (card color, dimmed) */}
+        {useSlideHover && (
+          <div
+            className="absolute inset-0 rounded-[30px] pointer-events-none"
+            style={{
+              backgroundColor,
+              opacity: 0.85,
+              zIndex: 0,
+            }}
+            aria-hidden
+          />
+        )}
+        {/* Illustration wrapper: absolute, extends outside card — hidden on hover when carousel enabled (or slides away with content) */}
         <div
-          className={`absolute overflow-visible flex items-end shrink-0 bg-transparent z-20 transition-opacity duration-300 ${enableHoverCarousel ? "opacity-100 group-hover:opacity-0 group-hover:pointer-events-none" : ""}`}
+          className={`absolute overflow-visible flex items-end shrink-0 bg-transparent z-20 ${!useSlideHover && enableHoverCarousel ? "transition-opacity duration-300 opacity-100 group-hover:opacity-0 group-hover:pointer-events-none" : ""}`}
           style={{
             width: imgW,
             height: imgH,
@@ -162,8 +202,14 @@ export function JourneyCard({
               width: imgW,
               height: imgH,
             }}
-            animate={{ y: [0, -10, 0] }}
-            transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
+            animate={{
+              y: useSlideHover && isHovered ? 0 : [0, -10, 0],
+            }}
+            transition={
+              useSlideHover && isHovered
+                ? { duration: 0.25, ease: "easeOut" }
+                : { repeat: Infinity, duration: 2.5, ease: "easeInOut" }
+            }
           >
             {illustration}
           </motion.div>
@@ -187,9 +233,9 @@ export function JourneyCard({
           </div>
         )}
 
-        {/* Text block: typography — sits behind hover overlay (z-[5]) when carousel enabled so hover content fully covers it */}
+        {/* Text block: typography — sits behind hover overlay when carousel enabled; with slide hover it moves off with content */}
         <div
-          className={`flex flex-col justify-center absolute transition-opacity duration-300 ${enableHoverCarousel ? "z-[5] group-hover:opacity-0 group-hover:pointer-events-none" : "z-10"}`}
+          className={`flex flex-col justify-center absolute ${useSlideHover ? "z-[5]" : enableHoverCarousel ? "z-[5] transition-opacity duration-300 group-hover:opacity-0 group-hover:pointer-events-none" : "z-10"}`}
           style={{
             width: 351,
             height: 225,
@@ -227,7 +273,7 @@ export function JourneyCard({
             {bodyText}
           </p>
         </div>
-      </div>
+      </motion.div>
     </>
   );
 
@@ -238,13 +284,24 @@ export function JourneyCard({
     borderRadius: CARD_RADIUS,
     backgroundColor,
     opacity: 1,
-    ...(enableHoverCarousel && { transition: "clip-path 0.25s ease" }),
+    ...(enableHoverCarousel && {
+      transition: "clip-path 0.3s ease",
+      ...(clipActive && { clipPath: `url(#${HOVER_CLIP_ID})` }),
+    }),
   };
 
   return (
     <div
+      ref={cardWrapperRef}
       className={`relative overflow-visible ${wrapperClassName}`}
       style={{ width: CARD_WIDTH, height: CARD_HEIGHT }}
+      onMouseEnter={() => {
+        if (useSlideHover && cardWrapperRef.current) {
+          setDistanceToLeftEdge(cardWrapperRef.current.getBoundingClientRect().left);
+          setIsHovered(true);
+        }
+      }}
+      onMouseLeave={() => setIsHovered(false)}
     >
       {/* SVG defs for hover clip path (only when hover carousel is enabled) */}
       {enableHoverCarousel && (
@@ -316,35 +373,37 @@ export function JourneyCard({
       <article
         className="relative overflow-visible rounded-[30px] flex journey-card-article"
         style={cardStyle}
-        data-hover-clip={enableHoverCarousel ? HOVER_CLIP_ID : undefined}
       >
         {cardContent}
       </article>
 
-      {/* Hover content outside article so img can overflow card without being clipped by clip-path */}
+      {/* Hover content outside article so img can overflow card without being clipped by clip-path; appears in place (no slide) when useSlideHover */}
       {enableHoverCarousel && effectiveHoverContent != null && (
-        <div
-          className="absolute inset-0 z-10 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity duration-300 flex items-center justify-center overflow-visible"
+        <motion.div
+          className={`absolute inset-0 flex items-center justify-center overflow-visible ${useSlideHover && isHovered ? "pointer-events-auto z-[25]" : "pointer-events-none z-10"}`}
           aria-hidden
           style={{
             marginLeft: HOVER_SIDE_INSET + CUTOUT_RADIUS,
             marginRight: HOVER_SIDE_INSET + CUTOUT_RADIUS,
           }}
+          initial={false}
+          animate={{
+            opacity: useSlideHover ? (isHovered ? 1 : 0) : 0,
+          }}
+          transition={
+            useSlideHover
+              ? isHovered
+                ? { duration: 0.4, delay: 0.3, ease: "easeOut" }
+                : { duration: 0.25, delay: 0, ease: "easeIn" }
+              : { duration: 0.2 }
+          }
         >
           <div className="w-full h-full relative overflow-visible">
             {effectiveHoverContent}
           </div>
-        </div>
+        </motion.div>
       )}
 
-      {/* Apply clip-path on hover so the card shape gets left/right cutouts */}
-      {enableHoverCarousel && (
-        <style>{`
-          .group:hover .journey-card-article[data-hover-clip] {
-            clip-path: url(#${HOVER_CLIP_ID});
-          }
-        `}</style>
-      )}
     </div>
   );
 }

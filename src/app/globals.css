@@ -1,5 +1,13 @@
 @import url("https://db.onlinewebfonts.com/c/29ddb4605533a38e086b48fa105e0d12?family=Nohemi");
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --Secondary-Secondary500: #C33241;
+  --Secondary-Secondary50: #F9EBEC;
+  --secondary: var(--Secondary-Secondary500);
+  --secondary-light: #F5E6E6;
+}
