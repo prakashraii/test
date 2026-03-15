@@ -11,8 +11,10 @@ export default function UserPostsPage({
     return (
       <>
         <Header />
-        <main className="min-h-screen py-12 px-4 md:px-8">
-          <p className="text-red-600">Invalid user ID.</p>
+        <main className="min-h-screen py-12 px-4 md:px-8 bg-[#A88964]">
+          <div className="max-w-[1200px] mx-auto">
+            <p className="text-red-200 font-medium">Invalid user ID.</p>
+          </div>
         </main>
       </>
     );
@@ -20,11 +22,13 @@ export default function UserPostsPage({
   return (
     <>
       <Header />
-      <main className="min-h-screen py-12 px-4 md:px-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">
-          User {userId} — Posts
-        </h1>
-        <UserPostsView userId={userId} />
+      <main className="min-h-screen py-10 md:py-14 px-4 md:px-8 bg-[#A88964]">
+        <div className="max-w-[1200px] mx-auto">
+          <h1 className="text-2xl md:text-3xl font-bold text-white mb-6 tracking-tight">
+            User Posts
+          </h1>
+          <UserPostsView userId={userId} />
+        </div>
       </main>
     </>
   );

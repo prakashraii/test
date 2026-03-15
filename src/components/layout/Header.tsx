@@ -1,36 +1,51 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+const navItems = [
+  { href: "/", label: "Home" },
+  { href: "/task1", label: "Task 1 (Journey)" },
+  { href: "/task2", label: "Dashboard" },
+] as const;
 
 export function Header() {
+  const pathname = usePathname();
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-200/80 bg-white/90 backdrop-blur-sm rounded-b-2xl shadow-sm">
-      <nav className="max-w-[1280px] mx-auto px-4 md:px-8 py-4 flex items-center justify-between">
+    <header className="sticky top-0 z-50 w-full border-b border-white/20 bg-[#A88964] shadow-lg shadow-black/10 rounded-b-2xl">
+      <nav className="max-w-[1280px] mx-auto px-4 md:px-8 py-3.5 flex items-center justify-between">
         <Link
           href="/"
-          className="text-lg font-semibold text-gray-900 hover:text-green-600 transition-colors"
+          className="flex items-center gap-2 text-lg font-bold text-white hover:text-white/90 transition-colors duration-200"
         >
+          <span className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center text-white text-sm font-extrabold shadow-md">
+            S
+          </span>
           SkillShikshya
         </Link>
-        <div className="flex items-center gap-6">
-          <Link
-            href="/"
-            className="text-sm font-medium text-gray-600 hover:text-green-600 transition-colors"
-          >
-            Home
-          </Link>
-          <Link
-            href="/task1"
-            className="text-sm font-medium text-gray-600 hover:text-green-600 transition-colors"
-          >
-            Task 1 (Journey)
-          </Link>
-          <Link
-            href="/task2"
-            className="text-sm font-medium text-gray-600 hover:text-green-600 transition-colors"
-          >
-            Task 2 (What&apos;s Hot)
-          </Link>
+        <div className="flex items-center gap-1">
+          {navItems.map(({ href, label }) => {
+            const isActive =
+              href === "/"
+                ? pathname === "/"
+                : pathname.startsWith(href);
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={`
+                  relative px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 text-white
+                  ${isActive
+                    ? "bg-white/25"
+                    : "hover:bg-white/15"
+                  }
+                `}
+              >
+                <span className="relative">{label}</span>
+              </Link>
+            );
+          })}
         </div>
       </nav>
     </header>

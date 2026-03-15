@@ -69,50 +69,57 @@ export function UserPostsView({ userId }: { userId: number }) {
 
   if (apiIsLoading) {
     return (
-      <div className="py-8 text-center text-gray-600">Loading posts...</div>
+      <div className="py-16 text-center">
+        <div className="inline-block w-10 h-10 border-2 border-white/40 border-t-white rounded-full animate-spin mb-4" />
+        <p className="text-white/90">Loading posts...</p>
+      </div>
     );
   }
   if (isError) {
     return (
-      <div className="py-8 text-center text-red-600">
-        Something went wrong
-        {error instanceof Error && ` — ${error.message}`}
+      <div className="rounded-2xl border border-red-200/80 dark:border-red-800/50 bg-red-50/95 dark:bg-red-950/40 p-8 text-center shadow-lg">
+        <p className="text-red-700 dark:text-red-300 font-medium">
+          Something went wrong
+          {error instanceof Error && ` — ${error.message}`}
+        </p>
       </div>
     );
   }
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center gap-4">
-        <Link
-          href="/task2"
-          className="text-sm font-medium text-blue-600 hover:text-blue-800"
-        >
-          ← Back to users
-        </Link>
-      </div>
+      <Link
+        href="/task2"
+        className="inline-flex items-center gap-2 text-sm font-semibold text-white/95 hover:text-white transition-colors rounded-lg py-2 pr-3 pl-2 -ml-2 hover:bg-white/10"
+      >
+        <span className="flex w-8 h-8 rounded-lg bg-white/15 items-center justify-center" aria-hidden>←</span>
+        Back to users
+      </Link>
       <AddPostForm userId={userId} onAdded={() => setLocalPostsVersion((v) => v + 1)} />
       <section>
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Posts</h2>
+        <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <span className="w-1 h-6 rounded-full bg-white/80" />
+          Posts
+        </h2>
         <PostsList posts={paginatedPosts} />
         {totalPages > 1 && (
-          <div className="mt-4 flex items-center justify-center gap-2">
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <button
               type="button"
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage <= 1}
-              className="px-3 py-1 text-sm font-medium text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed hover:underline"
+              className="px-4 py-2.5 text-sm font-semibold rounded-xl text-[#A88964] bg-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/95 active:scale-[0.98] transition-all shadow-md"
             >
               Previous
             </button>
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-white/95 font-medium px-2">
               Page {currentPage} of {totalPages}
             </span>
             <button
               type="button"
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage >= totalPages}
-              className="px-3 py-1 text-sm font-medium text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed hover:underline"
+              className="px-4 py-2.5 text-sm font-semibold rounded-xl text-[#A88964] bg-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/95 active:scale-[0.98] transition-all shadow-md"
             >
               Next
             </button>

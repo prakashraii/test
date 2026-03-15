@@ -59,10 +59,20 @@ export function AddPostForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="border border-gray-200 rounded-lg p-4 bg-gray-50 space-y-4">
-      <h2 className="text-lg font-semibold text-gray-900">Add new post</h2>
+    <form
+      onSubmit={handleSubmit}
+      className="rounded-2xl border border-white/25 dark:border-gray-600/50 bg-white/95 dark:bg-gray-800/80 p-6 md:p-8 shadow-lg space-y-5"
+    >
+      <div className="flex items-center gap-3 pb-2 border-b border-gray-200 dark:border-gray-600/50">
+        <span className="flex w-10 h-10 rounded-xl bg-[#A88964]/15 dark:bg-[#A88964]/25 items-center justify-center">
+          <svg className="w-5 h-5 text-[#A88964] dark:text-[#c9a87a]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+        </span>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Add new post</h2>
+      </div>
       <div>
-        <label htmlFor="post-title" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="post-title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Title
         </label>
         <input
@@ -70,30 +80,36 @@ export function AddPostForm({
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Enter post title"
+          className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600/50 bg-white dark:bg-gray-800/80 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#A88964]/40 focus:border-[#A88964]/50 transition-all shadow-sm"
         />
         {errors.title && (
-          <p className="mt-1 text-sm text-red-600">{errors.title}</p>
+          <p className="mt-1.5 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
+            <span aria-hidden>•</span> {errors.title}
+          </p>
         )}
       </div>
       <div>
-        <label htmlFor="post-body" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="post-body" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Body
         </label>
         <textarea
           id="post-body"
           value={body}
           onChange={(e) => setBody(e.target.value)}
-          rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Write your post..."
+          rows={4}
+          className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600/50 bg-white dark:bg-gray-800/80 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#A88964]/40 focus:border-[#A88964]/50 transition-all shadow-sm resize-y min-h-[100px]"
         />
         {errors.body && (
-          <p className="mt-1 text-sm text-red-600">{errors.body}</p>
+          <p className="mt-1.5 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
+            <span aria-hidden>•</span> {errors.body}
+          </p>
         )}
       </div>
       <button
         type="submit"
-        className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+        className="w-full sm:w-auto px-6 py-3 text-sm font-semibold text-white bg-[#A88964] hover:bg-[#8f7354] dark:bg-[#A88964] dark:hover:bg-[#8f7354] rounded-xl transition-all shadow-md hover:shadow-lg active:scale-[0.98]"
       >
         Add post
       </button>
