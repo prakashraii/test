@@ -1,24 +1,41 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { fetchUsers } from "@/lib/api";
 import { UserCard } from "./UserCard";
 import { SearchBar } from "./SearchBar";
+import { useTask2Store } from "@/store/task2Store";
+import type { User } from "@/lib/types";
 
-export function UserList() {
+interface UserListProps {
+  initialUsers?: User[];
+}
+
+export function UserList({ initialUsers }: UserListProps) {
   const [search, setSearch] = useState("");
+  const { users: storeUsers, setUsers } = useTask2Store();
   const {
-    data: users = [],
+    data: fetchedUsers = [],
     isLoading,
     isError,
     error,
   } = useQuery({
     queryKey: ["users"],
     queryFn: fetchUsers,
+    initialData: initialUsers,
   });
 
-  const apiIsLoading = isLoading;
+  useEffect(() => {
+    if (initialUsers?.length) setUsers(initialUsers);
+  }, [initialUsers, setUsers]);
+
+  useEffect(() => {
+    if (fetchedUsers.length) setUsers(fetchedUsers);
+  }, [fetchedUsers, setUsers]);
+
+  const users = storeUsers.length ? storeUsers : fetchedUsers;
+  const apiIsLoading = isLoading && !initialUsers?.length;
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
     if (!term) return users;
