@@ -420,7 +420,7 @@ export function HotSection() {
                     <div
                       className="absolute flex items-end"
                       style={{
-                        width: 442,
+                        width: 520,
                         height: 138,
                         top: 298,
                         left: 75,
@@ -471,19 +471,19 @@ export function HotSection() {
                           x: 0,
                           transition: { delay: 0.5, duration: 0.3 },
                         }}
-                        className="flex flex-col shrink-0"
+                        className="flex flex-col shrink-0 min-w-0"
                         style={{
-                          width: 218,
+                          width: 296,
                           height: 98,
                           opacity: 1,
                           gap: 4,
                           marginTop: -24,
+                          paddingRight: 20,
                         }}
                       >
                         <p
-                          className="text-white shrink-0 flex items-center justify-center"
+                          className="text-white shrink-0 flex items-center justify-start whitespace-nowrap w-full"
                           style={{
-                            width: 164,
                             height: 40,
                             opacity: 1,
                             fontFamily: "Outfit, sans-serif",
@@ -492,16 +492,15 @@ export function HotSection() {
                             fontSize: 32,
                             lineHeight: "100%",
                             letterSpacing: "0%",
-                            textAlign: "center",
+                            textAlign: "left",
                           }}
                         >
                           {item.label}
                         </p>
                         {item.description && (
                           <p
-                            className="shrink-0 flex items-center"
+                            className="shrink-0 flex items-center w-full max-w-full"
                             style={{
-                              width: 218,
                               height: 46,
                               opacity: 1,
                               fontFamily: "Outfit, sans-serif",
