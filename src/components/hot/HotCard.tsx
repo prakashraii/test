@@ -2,7 +2,6 @@
 
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
-import Link from "next/link";
 import { useState } from "react";
 import type { HotCardItem } from "@/data/hotCards";
 
@@ -38,7 +37,12 @@ export function HotCard({ item, isFeatured, onSelect }: HotCardProps) {
     duration: 1,
     ease: [0.7, -0.4, 0.4, 1.4] as const,
   };
-  const hoverSpring = { type: "spring" as const, mass: 1, stiffness: 100, damping: 15 };
+  const hoverSpring = {
+    type: "spring" as const,
+    mass: 1,
+    stiffness: 100,
+    damping: 15,
+  };
 
   return (
     <motion.div
@@ -48,7 +52,9 @@ export function HotCard({ item, isFeatured, onSelect }: HotCardProps) {
       initial={false}
       animate={{
         scale: clicked ? 1.03 : 1,
-        transition: isFeatured ? upcomingTransition : { type: "spring", stiffness: 400, damping: 25 },
+        transition: isFeatured
+          ? upcomingTransition
+          : { type: "spring", stiffness: 400, damping: 25 },
       }}
       whileHover={{ scale: 1.02 }}
       transition={hoverSpring}
@@ -59,14 +65,10 @@ export function HotCard({ item, isFeatured, onSelect }: HotCardProps) {
     >
       {isFeatured ? (
         <>
-          <Link
-            href="/task2"
-            className="absolute top-4 right-4 z-10 text-white/95 text-sm font-medium hover:underline flex items-center gap-1"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="absolute top-4 right-4 z-10 text-white/95 text-sm font-medium flex items-center gap-1">
             View all Courses
             <Icon icon="mdi:arrow-right" className="w-4 h-4" />
-          </Link>
+          </div>
           <div className="absolute top-6 left-1/2 -translate-x-1/2 flex flex-wrap justify-center gap-3 z-10">
             {FEATURED_ICONS.map(({ icon, label }) => (
               <div
@@ -84,7 +86,9 @@ export function HotCard({ item, isFeatured, onSelect }: HotCardProps) {
               <sup className="text-xl font-semibold ml-0.5">+</sup>
             </span>
             <span className="text-white font-bold mt-1">{item.label}</span>
-            <span className="text-white/90 text-sm mt-0.5">{item.description}</span>
+            <span className="text-white/90 text-sm mt-0.5">
+              {item.description}
+            </span>
           </div>
         </>
       ) : (
@@ -100,7 +104,12 @@ export function HotCard({ item, isFeatured, onSelect }: HotCardProps) {
             {item.label}
           </div>
           <div className="flex-1 pl-14 pr-6 py-6 flex flex-col justify-end">
-            <span className="text-sm font-normal" style={{ color: SMALL_CARD_TEXT }}>{item.description}</span>
+            <span
+              className="text-sm font-normal"
+              style={{ color: SMALL_CARD_TEXT }}
+            >
+              {item.description}
+            </span>
             <div className="mt-2 flex items-baseline gap-1">
               <span
                 className="text-4xl font-bold"

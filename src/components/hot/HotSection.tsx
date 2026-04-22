@@ -51,12 +51,9 @@ export function HotSection() {
 
   return (
     <section
-      id="task2"
+      id="hot-courses"
       className="max-w-[1216px] mx-auto px-4 md:px-8 mb-4 py-12 scroll-mt-24"
     >
-      <p className="text-center text-gray-500 text-sm mb-6">
-        Note: Click the cards to view the animation
-      </p>
       <div
         className="mb-2"
         style={{
